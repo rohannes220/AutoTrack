@@ -24,3 +24,23 @@ export async function createMechanic(overrides = {}) {
   const { insertedId } = await mongoose.connection.collection('mechanics').insertOne(doc);
   return { ...doc, _id: insertedId };
 }
+
+export const customerCredentials = {
+  email: 'jordan.lee@example.test',
+  password: 'temporary-pass-123',
+};
+
+// Inserts a customer account as if a mechanic had created it with a temporary password.
+export async function createCustomer(overrides = {}) {
+  const { password = customerCredentials.password, ...fields } = overrides;
+  const doc = {
+    name: 'Jordan Lee',
+    email: customerCredentials.email,
+    phone: '555-0100',
+    passwordHash: await bcrypt.hash(password, TEST_BCRYPT_ROUNDS),
+    role: 'customer',
+    ...fields,
+  };
+  const { insertedId } = await mongoose.connection.collection('customers').insertOne(doc);
+  return { ...doc, _id: insertedId };
+}

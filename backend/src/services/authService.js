@@ -24,3 +24,8 @@ export async function loginMechanic({ email, password }) {
     mechanic: { id, name: mechanic.name, position: mechanic.position },
   };
 }
+
+// Stub for the red phase: real implementation comes in the green commit.
+export async function loginCustomer() {
+  throw new AppError('Not implemented', 501);
+}
