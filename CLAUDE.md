@@ -38,7 +38,8 @@ The repo is an npm workspaces monorepo: a root `package.json` with `"workspaces"
 | Development | `npm run dev` |
 | Lint | `npm run lint` |
 | Format | `npm run format` |
-| Backend tests | `npm test` |
+| All tests (backend + frontend) | `npm test` |
+| Backend tests | `npm run test:backend` |
 | Single backend test file | `npm test -w backend -- tests/unit/<name>.test.js` |
 | Backend tests by name | `npm test -w backend -- -t "<test name>"` |
 | Frontend tests | `npm run test:frontend` |
