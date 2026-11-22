@@ -1,4 +1,6 @@
-# AutoTrack — Claude Code Instructions
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Imported context
 
@@ -9,9 +11,9 @@ Each developer may keep personal, untracked notes in `CLAUDE.local.md`.
 
 ## Project context
 
-AutoTrack is a web app for a single auto repair shop. Mechanics manage customers, vehicles, and repairs; customers have read-only access to their own vehicles and repair status. This is a two-person CS6983 Project 3 for Rohan Kumar and a partner. The product requirements in `docs/PRD.md` are the source of truth.
+Single-shop repair tracker for CS6983 Project 3 (team listed in README): mechanics manage records, and customers get read-only access to their own data. `docs/PRD.md` is the source of truth.
 
-Never invent features: build only what a user story in docs/PRD.md asks for; if a request isn't covered, stop and ask.
+Never invent features: build only what a user story in docs/PRD.md asks for; if a request isn't covered, stop and ask. The PRD's Open Questions (§12) are unresolved — repair status list and order, whether an admin role exists, and how a new customer account gets its password. Ask before building anything that depends on them.
 
 ## Tech stack
 
@@ -27,27 +29,37 @@ Never invent features: build only what a user story in docs/PRD.md asks for; if 
 
 ## Commands
 
-All commands below are **planned** until `package.json` exists.
+The repo is an npm workspaces monorepo: a root `package.json` with `"workspaces": ["backend", "frontend"]`. Root scripts delegate to the workspaces; Playwright runs from the root. All commands below are **planned** and unverified until `package.json` exists.
 
 | Task | Command |
 | --- | --- |
-| Install | `npm install` |
+| Install (all workspaces) | `npm install` |
+| Add a dependency | `npm install <pkg> -w backend` (or `-w frontend`) |
 | Development | `npm run dev` |
 | Lint | `npm run lint` |
 | Format | `npm run format` |
 | Backend tests | `npm test` |
+| Single backend test file | `npm test -w backend -- tests/unit/<name>.test.js` |
+| Backend tests by name | `npm test -w backend -- -t "<test name>"` |
 | Frontend tests | `npm run test:frontend` |
+| Single frontend test file | `npm test -w frontend -- src/<path>.test.jsx` |
 | E2E tests | `npm run test:e2e` |
+| Single E2E spec | `npx playwright test e2e/<name>.spec.js` |
 | Seed | `npm run seed` |
+
+`.claude/settings.json` denies reading `.env*` files and running `curl`/`wget`, so don't try them. Use `.env.example` for configuration keys.
 
 ## Architecture
 
-Planned layout:
+Layout (scaffolded; folders are empty until implemented):
 
-- `backend/`: routes -> controllers -> services -> models; Mongoose models live in `models/`.
-- `frontend/`: `pages/`, `components/`, and `services/apiClient`.
+- `backend/src/`: request flow is `routes/` -> `controllers/` -> `services/` -> `models/` (Mongoose).
+  - `middleware/`: JWT authentication, role guards, customer-ownership guards, and the centralized error handler.
+  - `config/`: environment and database connection. `utils/`: shared helpers.
+- `backend/tests/`: `unit/` (Jest, mainly services), `integration/` (Supertest against the Express app), `helpers/` (test DB setup and fixtures).
+- `frontend/src/`: `pages/` (one per PRD screen), `components/`, `context/` (auth state: token and role), `services/` (`apiClient` attaches the JWT).
 - `e2e/`: Playwright end-to-end tests.
-- `docs/`: requirements and session logs.
+- `docs/`: `PRD.md`, `plans/` (implementation plans), `sessions/` (session logs).
 
 Key decisions:
 
@@ -94,8 +106,5 @@ Save a short log of each Claude Code session to `docs/sessions/YYYY-MM-DD-<topic
 ## Do's and Don'ts
 
 - Keep secrets out of git. `.env*` files are ignored except `.env.example`.
-- Use bcrypt for passwords.
-- Check authentication, role, and ownership on the server.
 - Do not modify a partner's tests just to make code pass.
 - Run lint and tests before committing.
-- Do not invent features; follow `docs/PRD.md` and ask when requirements are unclear.
