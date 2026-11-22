@@ -1,11 +1,14 @@
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+// Connect through the app's db module so tests get the same mongoose settings
+// (including sanitizeFilter) as the real server.
+import { connectDb, disconnectDb } from '../../src/config/db.js';
 
 let mongod;
 
 export async function connectTestDb() {
   mongod = await MongoMemoryServer.create();
-  await mongoose.connect(mongod.getUri());
+  await connectDb(mongod.getUri());
 }
 
 export async function clearTestDb() {
@@ -14,6 +17,6 @@ export async function clearTestDb() {
 }
 
 export async function closeTestDb() {
-  await mongoose.disconnect();
+  await disconnectDb();
   await mongod?.stop();
 }
