@@ -53,3 +53,11 @@ export async function updateVehicle(vehicleId, changes) {
   }
   return vehicle;
 }
+
+export async function listCustomerVehicles() {
+  throw new Error('Not implemented');
+}
+
+export async function getCustomerVehicle() {
+  throw new Error('Not implemented');
+}

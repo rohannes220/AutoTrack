@@ -136,3 +136,49 @@ describe('vehicleService.updateVehicle', () => {
     ).rejects.toMatchObject({ statusCode: 409 });
   });
 });
+
+describe('vehicleService.listCustomerVehicles', () => {
+  it("returns only the given customer's vehicles", async () => {
+    const other = await createCustomer({ email: 'other@example.test' });
+    const own = await createVehicle(customer, { licensePlate: 'OWN1' });
+    await createVehicle(other, { licensePlate: 'OTHER1' });
+
+    const vehicles = await vehicleService.listCustomerVehicles(customer._id.toString());
+
+    expect(vehicles.map((vehicle) => vehicle.id)).toEqual([own._id.toString()]);
+  });
+
+  it('returns an empty list for a malformed customer id', async () => {
+    await createVehicle(customer);
+
+    await expect(vehicleService.listCustomerVehicles('nope')).resolves.toEqual([]);
+  });
+});
+
+describe('vehicleService.getCustomerVehicle', () => {
+  it("returns the customer's own vehicle", async () => {
+    const own = await createVehicle(customer);
+
+    const vehicle = await vehicleService.getCustomerVehicle(
+      customer._id.toString(),
+      own._id.toString(),
+    );
+
+    expect(vehicle.id).toBe(own._id.toString());
+  });
+
+  it("throws 404 for another customer's vehicle", async () => {
+    const other = await createCustomer({ email: 'other@example.test' });
+    const theirs = await createVehicle(other);
+
+    await expect(
+      vehicleService.getCustomerVehicle(customer._id.toString(), theirs._id.toString()),
+    ).rejects.toMatchObject({ statusCode: 404, message: 'Vehicle not found' });
+  });
+
+  it.each([UNKNOWN_ID, 'nope'])('throws 404 for vehicle id %s', async (vehicleId) => {
+    await expect(
+      vehicleService.getCustomerVehicle(customer._id.toString(), vehicleId),
+    ).rejects.toMatchObject({ statusCode: 404, message: 'Vehicle not found' });
+  });
+});
