@@ -1,6 +1,7 @@
 import express from 'express';
 import healthRoutes from './routes/healthRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import vehicleRoutes from './routes/vehicleRoutes.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 
 export function createApp() {
@@ -11,6 +12,7 @@ export function createApp() {
 
   app.use('/api/health', healthRoutes);
   app.use('/api/auth', authRoutes);
+  app.use('/api/vehicles', vehicleRoutes);
 
   app.use(notFound);
   app.use(errorHandler);
