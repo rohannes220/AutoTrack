@@ -25,3 +25,8 @@ export function requireAuth(req, res, next) {
   req.user = { id: sub, role };
   return next();
 }
+
+// Stub for the red phase: real implementation comes in the green commit.
+export function requireRole() {
+  return (req, res, next) => next();
+}
