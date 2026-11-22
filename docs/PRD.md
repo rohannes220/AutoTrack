@@ -146,6 +146,7 @@ These are planned endpoints. All customer data access must be scoped on the serv
 | POST | `/api/customers` | Create a customer and customer account | Mechanic |
 | GET | `/api/customers/:customerId` | View a customer | Mechanic |
 | PATCH | `/api/customers/:customerId` | Edit a customer | Mechanic |
+| GET | `/api/vehicles` | List vehicles | Mechanic |
 | POST | `/api/vehicles` | Create a vehicle and link it to a customer | Mechanic |
 | PATCH | `/api/vehicles/:vehicleId` | Edit a vehicle or its customer link | Mechanic |
 | GET | `/api/me/vehicles` | View the authenticated customer's vehicles; server filters by own customer ID | Customer (own data only) |
