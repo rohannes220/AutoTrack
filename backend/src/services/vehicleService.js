@@ -54,10 +54,22 @@ export async function updateVehicle(vehicleId, changes) {
   return vehicle;
 }
 
-export async function listCustomerVehicles() {
-  throw new Error('Not implemented');
+// Customer-facing reads filter only on the authenticated customer's id, never on request input.
+export async function listCustomerVehicles(customerId) {
+  if (!isObjectIdString(customerId)) {
+    return [];
+  }
+  return Vehicle.find({ owner: customerId }).sort({ state: 1, licensePlate: 1 });
 }
 
-export async function getCustomerVehicle() {
-  throw new Error('Not implemented');
+// Another customer's vehicle gets the same 404 as an unknown id, so ownership is not revealed.
+export async function getCustomerVehicle(customerId, vehicleId) {
+  const vehicle =
+    isObjectIdString(customerId) && isObjectIdString(vehicleId)
+      ? await Vehicle.findOne({ _id: vehicleId, owner: customerId })
+      : null;
+  if (!vehicle) {
+    throw new AppError('Vehicle not found', 404);
+  }
+  return vehicle;
 }
