@@ -1,0 +1,24 @@
+{
+  "name": "@autotrack/backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:coverage": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^5.0.1",
+    "mongoose": "^8.9.3"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "jest": "^30.5.2",
+    "mongodb-memory-server": "^11.4.0",
+    "supertest": "^7.3.2"
+  }
+}
