@@ -150,6 +150,7 @@ These are planned endpoints. All customer data access must be scoped on the serv
 | POST | `/api/vehicles` | Create a vehicle and link it to a customer | Mechanic |
 | PATCH | `/api/vehicles/:vehicleId` | Edit a vehicle or its customer link | Mechanic |
 | GET | `/api/me/vehicles` | View the authenticated customer's vehicles; server filters by own customer ID | Customer (own data only) |
+| GET | `/api/me/vehicles/:vehicleId` | View one of the authenticated customer's vehicles; server verifies ownership | Customer (own data only) |
 | POST | `/api/repairs` | Create a repair | Mechanic |
 | PATCH | `/api/repairs/:repairId` | Update a repair | Mechanic |
 | GET | `/api/me/repairs` | View the authenticated customer's repairs; server filters by own customer ID | Customer (own data only) |
