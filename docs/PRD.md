@@ -187,4 +187,7 @@ Use TDD with a red-green-refactor cycle: write a failing test, implement the sma
 ## 12. Open Questions
 
 - Do mechanics need an admin/manager role to create other mechanics?
-- How is a customer account linked when a mechanic creates it (for example, is a temporary password used)?
+
+### Resolved
+
+- **How does a new customer account get its password?** The mechanic sets a temporary password when creating the customer account. It is stored only as a bcrypt hash, and customers are not forced to change it.
