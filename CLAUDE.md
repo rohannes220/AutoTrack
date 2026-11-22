@@ -13,7 +13,7 @@ Each developer may keep personal, untracked notes in `CLAUDE.local.md`.
 
 Single-shop repair tracker for CS6983 Project 3 (team listed in README): mechanics manage records, and customers get read-only access to their own data. `docs/PRD.md` is the source of truth.
 
-Never invent features: build only what a user story in docs/PRD.md asks for; if a request isn't covered, stop and ask. The PRD's Open Questions (§12) are unresolved — repair status list and order, whether an admin role exists, and how a new customer account gets its password. Ask before building anything that depends on them.
+Never invent features: build only what a user story in docs/PRD.md asks for; if a request isn't covered, stop and ask. Repair statuses are settled: Pending → In Progress → Completed. New customer accounts get a temporary password set by the mechanic (PRD §12, resolved). The PRD's remaining Open Question (§12) is unresolved — whether an admin role exists. Ask before building anything that depends on it.
 
 ## Tech stack
 
