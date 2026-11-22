@@ -26,7 +26,16 @@ export function requireAuth(req, res, next) {
   return next();
 }
 
-// Stub for the red phase: real implementation comes in the green commit.
-export function requireRole() {
-  return (req, res, next) => next();
+// Allows only users whose role is one of `roles`. Use after requireAuth.
+// No authenticated user is a 401; an authenticated user with the wrong role is a 403.
+export function requireRole(...roles) {
+  return (req, res, next) => {
+    if (!req.user) {
+      return next(new AppError('Authentication required', 401));
+    }
+    if (!roles.includes(req.user.role)) {
+      return next(new AppError('Forbidden', 403));
+    }
+    return next();
+  };
 }
