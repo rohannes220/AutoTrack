@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import { Customer } from '../models/Customer.js';
 import { Mechanic } from '../models/Mechanic.js';
 import { AppError } from '../utils/AppError.js';
 import { signAccessToken } from '../utils/jwt.js';
@@ -25,7 +26,21 @@ export async function loginMechanic({ email, password }) {
   };
 }
 
-// Stub for the red phase: real implementation comes in the green commit.
-export async function loginCustomer() {
-  throw new AppError('Not implemented', 501);
+export async function loginCustomer({ email, password }) {
+  const customer = await Customer.findOne({ email: email.trim().toLowerCase() }).select(
+    '+passwordHash',
+  );
+
+  const passwordMatches = customer && (await bcrypt.compare(password, customer.passwordHash));
+  if (!passwordMatches) {
+    throw new AppError(INVALID_CREDENTIALS, 401);
+  }
+
+  const id = customer._id.toString();
+  const token = signAccessToken({ sub: id, role: customer.role });
+
+  return {
+    token,
+    customer: { id, name: customer.name },
+  };
 }
