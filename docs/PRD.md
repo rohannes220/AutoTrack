@@ -14,11 +14,11 @@ AutoTrack is a web app for one auto repair shop. Mechanics manage customer accou
 
 ### Mechanic
 
-Mechanics log in and can create, view, search, and edit customers; create and edit vehicles and link them to customers; create repairs and update their category, assigned mechanic, dates, notes, and status; and view the mechanics list and repairs assigned to mechanics. Mechanics create customer accounts; customers do not self-register.
+Mechanics log in and can create, edit, and update records. They can create, view, search, and edit customers; create and edit vehicles and link them to customers; create repairs and update their category, description, estimated cost, assigned mechanic, dates, notes, and status; and view the mechanics list and repairs assigned to mechanics. Mechanics create customer accounts; customers do not self-register.
 
 ### Customer
 
-Customers log in and can view only their own vehicles and repair jobs, including repair status. Customer access is read-only. The API must enforce ownership for every customer-facing data endpoint; the UI alone is not an authorization boundary.
+Customers log in and have read-only access to their own vehicles and repair status. They cannot view other customers' data or change any records. The API must enforce ownership for every customer-facing data endpoint; the UI alone is not an authorization boundary.
 
 ## 4. Features and User Stories
 
@@ -48,6 +48,8 @@ As a customer, I want to log in so that I can check my repair status.
 As a mechanic, I want to create, edit, view, and search customer records so that I can keep shop records current.
 
 - A mechanic can create a customer record and customer login account.
+- A customer record holds the customer's name and contact information.
+- A customer can own multiple vehicles.
 - A mechanic can edit and view a customer record.
 - A mechanic can search customer records.
 - Customers cannot create or edit customer records.
@@ -60,8 +62,8 @@ As a mechanic, I want to create and edit vehicles and link them to a customer so
 
 - A mechanic can create and edit a vehicle record.
 - A mechanic can link a vehicle to a customer.
-- A vehicle records its make, model, color, state, license plate, and owner.
-- The combination of state and license plate is unique.
+- A vehicle records its make, model, year, color, state, license plate, and owner.
+- A license plate is unique within its state (the combination of state and license plate is unique).
 
 ### Repairs
 
@@ -70,9 +72,10 @@ As a mechanic, I want to create and edit vehicles and link them to a customer so
 As a mechanic, I want to create and update repair jobs so that the shop can track work on each vehicle.
 
 - A mechanic can create a repair linked to a vehicle, customer, and mechanic.
-- A repair records its unique human-readable repair number, category, status, date received, and expected completion date.
+- A repair records its unique human-readable repair number, category, description, status, estimated cost, date received, and expected completion date, plus optional notes.
 - The category is Oil, Electronics, Engine, or Body.
-- A mechanic can update the assigned mechanic, category, dates, optional notes, and status.
+- The status is Pending, In Progress, or Completed.
+- A mechanic can update the assigned mechanic, category, description, estimated cost, dates, optional notes, and status.
 - Repair status is stored on the repair, not on the customer or vehicle.
 
 #### US-06 — View own repairs
@@ -122,12 +125,14 @@ As a mechanic, I want to see the mechanics list and assigned repairs so that I c
 
 | Collection | Fields and references | Constraints |
 | --- | --- | --- |
-| Customer | Name; vehicles (references to Vehicle); repairs (references to Repair); login account (email, bcrypt password hash, role `customer`) | Customers are created by mechanics, not by self-registration. |
-| Vehicle | Make, model, color, US state code, license plate, owner (reference to Customer) | State + license plate must be unique together. |
-| Repair | Repair number, vehicle (reference to Vehicle), customer (reference to Customer), mechanic (reference to Mechanic), category, status, date received, expected completion date, optional notes | Repair number is unique. Category is Oil, Electronics, Engine, or Body. Status belongs to each repair. |
-| Mechanic | Name, position, assigned repairs (references to Repair), login account (role `mechanic`) | Seed five mechanics. |
+| Customer | Name, contact information, login account (email, bcrypt password hash, role `customer`) | Customers are created by mechanics, not by self-registration. A customer can own multiple vehicles (via `Vehicle.owner`). |
+| Vehicle | Make, model, year, color, state (US state code), licensePlate, owner (reference to Customer) | License plate is unique per state: `state` + `licensePlate` must be unique together. |
+| Repair | repairNumber, vehicle (reference to Vehicle), customer (reference to Customer), mechanic (reference to Mechanic), category, description, status, estimatedCost, dateReceived, expectedCompletionDate, notes (optional) | Repair number is unique. Category is Oil, Electronics, Engine, or Body. Status is Pending, In Progress, or Completed and belongs to each repair. |
+| Mechanic | Name, position, login account (email, bcrypt password hash, role `mechanic`) | Seed five mechanics. |
 
-Seed data consists of five mechanics, 20 customers, 20 vehicles (with some customers owning multiple vehicles), and sample repairs across all four categories.
+Relationships are stored once, on the referencing document: a customer's vehicles are found by `Vehicle.owner`, and a customer's or mechanic's repairs by `Repair.customer` or `Repair.mechanic`. Customer and Mechanic do not store reference arrays.
+
+Seed data consists of five mechanics, 20 customers, 20 vehicles (with some customers owning multiple vehicles), and sample repairs across all four categories and all three statuses.
 
 ## 8. API Endpoints
 
@@ -181,6 +186,5 @@ Use TDD with a red-green-refactor cycle: write a failing test, implement the sma
 
 ## 12. Open Questions
 
-- What is the exact list and order of repair statuses?
 - Do mechanics need an admin/manager role to create other mechanics?
 - How is a customer account linked when a mechanic creates it (for example, is a temporary password used)?
