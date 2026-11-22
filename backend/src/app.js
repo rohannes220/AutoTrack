@@ -1,0 +1,17 @@
+import express from 'express';
+import healthRoutes from './routes/healthRoutes.js';
+import { errorHandler, notFound } from './middleware/errorHandler.js';
+
+export function createApp() {
+  const app = express();
+
+  app.disable('x-powered-by');
+  app.use(express.json());
+
+  app.use('/api/health', healthRoutes);
+
+  app.use(notFound);
+  app.use(errorHandler);
+
+  return app;
+}
